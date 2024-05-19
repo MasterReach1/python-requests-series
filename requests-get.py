@@ -1,31 +1,36 @@
+import os
 import json
 import requests
+from dotenv import load_dotenv
 
-API_KEY = "efac550a3554d8fe000295cd0666b5b9"
+
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 city = "Dallas"
 state = "TX"
 country = "US"
+
 limit = 5
 
-r = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={city},{state},{country}&limit={limit}&appid={API_KEY}")
+request = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={city},{state},{country}&limit={limit}&appid={API_KEY}")
 
-if r.status_code == 200:
-    data = r.json()
+if request.status_code == 200:
+    data = request.json()
 else:
-    data = ""
+    data = []
 
 latitude = data[0].get('lat')
 longitude = data[0].get('lon')
 
-r = requests.get(f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={API_KEY}")
+# weather data latitude and longitude
 
-#access the data retrieved with the proper commands
-#api docs in description
+weatherRequest = requests.get(f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={API_KEY}")
 
-weatherdata = r.json()
+if request.status_code == 200:
+    data = weatherRequest.json()
+else:
+    data = {}
 
-weatherData = weatherdata.get('weather', {})
-
-
-print(weatherData[0].get('description'))
+weatherData = data.get("main")
+print(weatherData.get("temp"))
